@@ -10,6 +10,14 @@ interface TodoResponse {
 
 const log = (msg: string) => console.log(`execute ${msg} method`);
 
+export const getTodo = async (id?: string): Promise<TodoResponse> => {
+  console.log("id: >>", id);
+  if (!id) return {} as TodoResponse;
+  const url = `${baseUrl}/${id}`;
+  const res = await axios.get(url);
+  return res.data;
+};
+
 export const getTodos = async (): Promise<TodoResponse[]> => {
   log("get");
   const res = await axios.get(baseUrl);
@@ -19,6 +27,7 @@ export const getTodos = async (): Promise<TodoResponse[]> => {
 
 export const updateTodos = async (todo: TodoResponse) => {
   log("put");
+  console.log("params: >>", todo);
   const url = `${baseUrl}/${todo.id}`;
   const res = await axios.put(url, todo);
 

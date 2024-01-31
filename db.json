@@ -3,7 +3,7 @@
     {
       "id": "1",
       "title": "a title",
-      "isDone": true
+      "isDone": false
     },
     {
       "id": "2",

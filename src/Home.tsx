@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from "react";
-
 import { getTodos, updateTodos } from "./apis/todos";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface Todo {
   id: string;
@@ -9,7 +7,7 @@ interface Todo {
   isDone: boolean;
 }
 
-const App = () => {
+const Home = () => {
   const queryClient = useQueryClient();
 
   const { data: todos } = useQuery({
@@ -18,11 +16,16 @@ const App = () => {
     queryFn: getTodos,
   });
 
+  const mutation = useMutation({
+    mutationFn: updateTodos,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todo"] });
+    },
+  });
+
   const handleClick = async (todo: Todo) => {
     const newTodo = { ...todo, isDone: !todo.isDone };
-
-    await updateTodos(newTodo);
-    queryClient.invalidateQueries({ queryKey: ["todo"] });
+    mutation.mutate(newTodo);
   };
 
   return (
@@ -44,4 +47,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Home;
