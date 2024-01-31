@@ -1,5 +1,6 @@
-import { getTodos, updateTodos } from "./apis/todos";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { getTodos } from "./apis/todos";
 
 export interface Todo {
   id: string;
@@ -8,24 +9,16 @@ export interface Todo {
 }
 
 const Home = () => {
-  const queryClient = useQueryClient();
+  const navigation = useNavigate();
 
   const { data: todos } = useQuery({
     initialData: [],
-    queryKey: ["todo"],
+    queryKey: ["todos"],
     queryFn: getTodos,
   });
 
-  const mutation = useMutation({
-    mutationFn: updateTodos,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todo"] });
-    },
-  });
-
   const handleClick = async (todo: Todo) => {
-    const newTodo = { ...todo, isDone: !todo.isDone };
-    mutation.mutate(newTodo);
+    navigation(`/post/${todo.id}`);
   };
 
   return (
