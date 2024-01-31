@@ -1,6 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useMutationState,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { addTodo, getTodos } from "./apis/todos";
+import { TodoCard } from "./components/TodoCard";
 
 export interface Todo {
   id: string;
@@ -19,6 +25,7 @@ const Home = () => {
   });
 
   const { mutate, isPending, variables } = useMutation({
+    mutationKey: ["addTodo"],
     mutationFn: addTodo,
     onSettled: () => {
       console.log("settled");
@@ -44,27 +51,20 @@ const Home = () => {
     <div className="m-10">
       <button onClick={handleClickAdd}>add</button>
       {todos.map((todo) => (
-        <TodoCard todo={todo} onClick={handleClick} />
+        <TodoCard key={todo.id} todo={todo} onClick={handleClick} />
       ))}
-      {isPending && <TodoCard todo={variables} onClick={handleClick} />}
+      <RemoteComp />
     </div>
   );
 };
 
-const TodoCard = ({ todo, onClick }: { todo: Todo; onClick: any }) => {
-  return (
-    <button
-      onClick={() => onClick(todo)}
-      key={todo.id}
-      className="h-10 my-5 bg-red-100 w-56 flex flex-row"
-    >
-      <div>{todo.id}</div>
-      <div className="px-2">/</div>
-      <div>{todo.title}</div>
-      <div className="px-2">/</div>
-      <div>{todo.isDone ? "done" : "not yet"} </div>
-    </button>
-  );
+const RemoteComp = () => {
+  const variables = useMutationState({
+    filters: { mutationKey: ["addTodo"], status: "pending" },
+    select: (mutation) => mutation.state.variables,
+  });
+
+  return <TodoCard todo={(variables[0] ?? {}) as any} onClick={() => {}} />;
 };
 
 export default Home;
