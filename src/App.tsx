@@ -14,10 +14,21 @@ const App = () => {
     getTodos().then(setTodos);
   }, []);
 
+  const handleClick = (todo: Todo) => {
+    console.log("id: >> ", todo.id);
+  };
+
   return (
-    <div className="bg-red-100 m-10">
+    <div className="m-10">
       {todos.map((todo) => (
-        <div key={todo.id}>{todo.title}</div>
+        <button
+          onClick={() => handleClick(todo)}
+          key={todo.id}
+          className="h-10 my-5 bg-red-100 w-56 flex flex-col"
+        >
+          <div>{todo.id}</div>
+          <div>{todo.title}</div>
+        </button>
       ))}
     </div>
   );
