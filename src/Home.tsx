@@ -18,6 +18,14 @@ const Home = () => {
     queryFn: getTodos,
   });
 
+  const mutation = useMutation({
+    mutationFn: addTodo,
+    onSuccess: () => {
+      console.log("success");
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+    },
+  });
+
   const handleClickAdd = async () => {
     const newTodo = {
       id: "10",
@@ -25,8 +33,7 @@ const Home = () => {
       isDone: false,
     };
 
-    await addTodo(newTodo);
-    queryClient.invalidateQueries({ queryKey: ["todos"] });
+    mutation.mutate(newTodo);
   };
 
   const handleClick = async (todo: Todo) => {
