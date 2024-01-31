@@ -18,10 +18,10 @@ const Home = () => {
     queryFn: getTodos,
   });
 
-  const mutation = useMutation({
+  const { mutate, isPending, variables } = useMutation({
     mutationFn: addTodo,
-    onSuccess: () => {
-      console.log("success");
+    onSettled: () => {
+      console.log("settled");
       queryClient.invalidateQueries({ queryKey: ["todos"] });
     },
   });
@@ -33,7 +33,7 @@ const Home = () => {
       isDone: false,
     };
 
-    mutation.mutate(newTodo);
+    mutate(newTodo);
   };
 
   const handleClick = async (todo: Todo) => {
@@ -44,19 +44,26 @@ const Home = () => {
     <div className="m-10">
       <button onClick={handleClickAdd}>add</button>
       {todos.map((todo) => (
-        <button
-          onClick={() => handleClick(todo)}
-          key={todo.id}
-          className="h-10 my-5 bg-red-100 w-56 flex flex-row"
-        >
-          <div>{todo.id}</div>
-          <div className="px-2">/</div>
-          <div>{todo.title}</div>
-          <div className="px-2">/</div>
-          <div>{todo.isDone ? "done" : "not yet"} </div>
-        </button>
+        <TodoCard todo={todo} onClick={handleClick} />
       ))}
+      {isPending && <TodoCard todo={variables} onClick={handleClick} />}
     </div>
+  );
+};
+
+const TodoCard = ({ todo, onClick }: { todo: Todo; onClick: any }) => {
+  return (
+    <button
+      onClick={() => onClick(todo)}
+      key={todo.id}
+      className="h-10 my-5 bg-red-100 w-56 flex flex-row"
+    >
+      <div>{todo.id}</div>
+      <div className="px-2">/</div>
+      <div>{todo.title}</div>
+      <div className="px-2">/</div>
+      <div>{todo.isDone ? "done" : "not yet"} </div>
+    </button>
   );
 };
 

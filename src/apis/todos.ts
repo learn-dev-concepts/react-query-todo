@@ -36,9 +36,19 @@ export const updateTodos = async (todo: TodoResponse) => {
 
 let lastId = 0;
 export const addTodo = async (todo: TodoResponse) => {
-  if (Number(lastId) === Number(todo.id)) throw new Error("dup");
+  await delay(2000);
+  if (Number(lastId) === Number(todo.id)) {
+    throw new Error("dup");
+  }
 
   const res = await axios.post(baseUrl, todo);
   lastId = res.data.id;
   return res.data;
 };
+
+const delay = (d: number) =>
+  new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, d);
+  });
