@@ -10,9 +10,8 @@ interface TodoResponse {
 
 const log = (msg: string) => console.log(`execute ${msg} method`);
 
-export const getTodo = async (id?: string): Promise<TodoResponse> => {
+export const getTodo = async (id: string): Promise<TodoResponse> => {
   console.log("id: >>", id);
-  if (!id) return {} as TodoResponse;
   const url = `${baseUrl}/${id}`;
   const res = await axios.get(url);
   return res.data;

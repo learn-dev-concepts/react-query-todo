@@ -1,7 +1,7 @@
 import { getTodos, updateTodos } from "./apis/todos";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-interface Todo {
+export interface Todo {
   id: string;
   title: string;
   isDone: boolean;

@@ -13,9 +13,11 @@ const Detail = () => {
   });
 
   const { data: todo } = useQuery({
-    queryKey: ["todo"],
-    queryFn: () => getTodo(test),
-    enabled: test !== undefined,
+    queryKey: ["todo", test],
+    queryFn: ({ queryKey }) => {
+      const [key, id] = queryKey;
+      return id != undefined ? getTodo(id) : null;
+    },
   });
 
   return (
