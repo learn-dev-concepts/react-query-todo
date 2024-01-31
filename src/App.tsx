@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
-import { getTodos } from "./apis/todos";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { getTodos, updateTodos } from "./apis/todos";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface Todo {
   id: string;
@@ -10,24 +10,19 @@ interface Todo {
 }
 
 const App = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const queryClient = useQueryClient();
 
-  const { data } = useQuery({
+  const { data: todos } = useQuery({
     initialData: [],
     queryKey: ["todo"],
     queryFn: getTodos,
-    select: (res): Todo[] => res.map((todo) => ({ ...todo, isDone: false })),
   });
 
-  useEffect(() => {
-    setTodos(data);
-  }, [data]);
-
-  const handleClick = (todo: Todo) => {
+  const handleClick = async (todo: Todo) => {
     const newTodo = { ...todo, isDone: !todo.isDone };
-    const newList = todos.map((t) => (t.id === newTodo.id ? newTodo : t));
 
-    setTodos(newList);
+    await updateTodos(newTodo);
+    queryClient.invalidateQueries({ queryKey: ["todo"] });
   };
 
   return (
