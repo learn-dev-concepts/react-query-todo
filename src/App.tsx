@@ -1,26 +1,26 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
 
-function App() {
+import { getTodos } from "./apis/todos";
+
+interface Todo {
+  id: number;
+  title: string;
+}
+
+const App = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+
+  useEffect(() => {
+    getTodos().then(setTodos);
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="bg-red-100 m-10">
+      {todos.map((todo) => (
+        <div key={todo.id}>{todo.title}</div>
+      ))}
     </div>
   );
-}
+};
 
 export default App;
