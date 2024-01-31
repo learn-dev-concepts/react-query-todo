@@ -12,16 +12,16 @@ interface Todo {
 const App = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
 
-  useEffect(() => {
-    getTodos()
-      .then((todoArr) => todoArr.map((todo) => ({ ...todo, isDone: false })))
-      .then(setTodos);
-  }, []);
+  const { data } = useQuery({
+    initialData: [],
+    queryKey: ["todo"],
+    queryFn: getTodos,
+    select: (res): Todo[] => res.map((todo) => ({ ...todo, isDone: false })),
+  });
 
-  // const { data } = useQuery({
-  //   queryKey: ["todo"],
-  //   queryFn: getTodos,
-  // });
+  useEffect(() => {
+    setTodos(data);
+  }, [data]);
 
   const handleClick = (todo: Todo) => {
     const newTodo = { ...todo, isDone: !todo.isDone };
