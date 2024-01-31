@@ -24,9 +24,18 @@ const Home = () => {
     queryFn: getTodos,
   });
 
-  const { mutate, isPending, variables } = useMutation({
-    mutationKey: ["addTodo"],
+  const mutation = useMutation({
     mutationFn: addTodo,
+    onMutate: async (newTodo) => {
+      await queryClient.cancelQueries({ queryKey: ["todos"] });
+      const previousTodos = queryClient.getQueryData(["todos"]);
+      queryClient.setQueryData(["todos"], (old: Todo[]) => [...old, newTodo]);
+
+      return { previousTodos };
+    },
+    onError: (err, newTodo, context: any) => {
+      queryClient.setQueryData(["todos"], context.previousTodos);
+    },
     onSettled: () => {
       console.log("settled");
       queryClient.invalidateQueries({ queryKey: ["todos"] });
@@ -40,7 +49,7 @@ const Home = () => {
       isDone: false,
     };
 
-    mutate(newTodo);
+    mutation.mutate(newTodo);
   };
 
   const handleClick = async (todo: Todo) => {
@@ -53,18 +62,8 @@ const Home = () => {
       {todos.map((todo) => (
         <TodoCard key={todo.id} todo={todo} onClick={handleClick} />
       ))}
-      <RemoteComp />
     </div>
   );
-};
-
-const RemoteComp = () => {
-  const variables = useMutationState({
-    filters: { mutationKey: ["addTodo"], status: "pending" },
-    select: (mutation) => mutation.state.variables,
-  });
-
-  return <TodoCard todo={(variables[0] ?? {}) as any} onClick={() => {}} />;
 };
 
 export default Home;
