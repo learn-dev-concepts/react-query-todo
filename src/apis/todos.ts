@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Todo } from "../Home";
 
 const baseUrl = "http://localhost:4000/todos";
 
@@ -30,5 +31,14 @@ export const updateTodos = async (todo: TodoResponse) => {
   const url = `${baseUrl}/${todo.id}`;
   const res = await axios.put(url, todo);
 
+  return res.data;
+};
+
+let lastId = 0;
+export const addTodo = async (todo: TodoResponse) => {
+  if (Number(lastId) === Number(todo.id)) throw new Error("dup");
+
+  const res = await axios.post(baseUrl, todo);
+  lastId = res.data.id;
   return res.data;
 };

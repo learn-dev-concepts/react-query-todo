@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { getTodos } from "./apis/todos";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { addTodo, getTodos } from "./apis/todos";
 
 export interface Todo {
   id: string;
@@ -10,6 +10,7 @@ export interface Todo {
 
 const Home = () => {
   const navigation = useNavigate();
+  const queryClient = useQueryClient();
 
   const { data: todos } = useQuery({
     initialData: [],
@@ -17,12 +18,24 @@ const Home = () => {
     queryFn: getTodos,
   });
 
+  const handleClickAdd = async () => {
+    const newTodo = {
+      id: "10",
+      title: "hi",
+      isDone: false,
+    };
+
+    await addTodo(newTodo);
+    queryClient.invalidateQueries({ queryKey: ["todos"] });
+  };
+
   const handleClick = async (todo: Todo) => {
     navigation(`/post/${todo.id}`);
   };
 
   return (
     <div className="m-10">
+      <button onClick={handleClickAdd}>add</button>
       {todos.map((todo) => (
         <button
           onClick={() => handleClick(todo)}
